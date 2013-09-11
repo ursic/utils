@@ -20,10 +20,7 @@ public:
             });
         store_thread(move(t));
     }
-    ~Threads() {
-        join_all_threads();
-    }
-
+    ~Threads();
 private:
     void release_thread(std::thread::id);
     void store_thread(std::thread);

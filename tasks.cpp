@@ -61,3 +61,8 @@ void Threads::join_released_threads() {
     }
     remove_joined_threads();
 }
+
+Threads::~Threads() {
+    join_all_threads();
+}
+
