@@ -42,6 +42,7 @@ void Threads::join_all_threads() {
             t.join();
         }
     }
+    released_threads.clear();
 }
 
 /*
