@@ -4,16 +4,14 @@
 #include "tbb/concurrent_queue.h"
 #include "tasks.hpp"
 
-using namespace std;
+tbb::concurrent_queue<std::thread::id> released_threads;
+std::vector<std::thread> threads;
 
-tbb::concurrent_queue<thread::id> released_threads;
-vector<thread> threads;
-
-void Threads::store_thread(thread t) {
+void Threads::store_thread(std::thread t) {
     threads.push_back(move(t));
 }
 
-void Threads::release_thread(thread::id id) {
+void release_thread(std::thread::id id) {
     released_threads.push(id);
 }
 
@@ -25,7 +23,7 @@ void Threads::remove_joined_threads() {
    threads.erase
         (remove_if(begin(threads),
                    end(threads),
-                   [&](const thread &t) {
+                   [&](const std::thread &t) {
                        return !t.joinable();
                    }),
          end(threads));
@@ -50,7 +48,7 @@ void Threads::join_all_threads() {
  * Necessary if the threads vector is filling up.
  */
 void Threads::join_released_threads() {
-    thread::id t_id;
+    std::thread::id t_id;
     while(0 < released_threads.unsafe_size()) {
         if (!released_threads.try_pop(t_id)) continue;
         for (auto &t : threads) {
@@ -66,4 +64,3 @@ void Threads::join_released_threads() {
 Threads::~Threads() {
     join_all_threads();
 }
-
